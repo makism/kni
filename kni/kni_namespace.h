@@ -1,0 +1,26 @@
+#ifndef KNI_NAMESPACE_H
+#define KNI_NAMESPACE_H
+
+namespace Kni {
+
+enum DepthColoring {
+    COLORING_PSYCHEDELIC_SHADES = 0,
+    COLORING_PSYCHEDELIC,
+    COLORING_RAINBOW,
+    COLORING_CYCLIC_RAINBOW,
+    COLORING_BLUES,
+    COLORING_GREY,
+    COLORING_STATUS,
+    COLORING_COUNT
+};
+
+enum Generators {
+    DEPTH = 0,
+    USER,
+    IMAGE,
+    HAND
+};
+
+}
+
+#endif // KNI_NAMESPACE_H
