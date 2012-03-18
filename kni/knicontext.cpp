@@ -2,23 +2,28 @@
 #include "knidepthgenerator.h"
 
 KniContext::KniContext()
+    : mHasInited(false)
 {
 
 }
 
 KniContext::~KniContext()
 {
-    mXnContext.Shutdown();
+    if (mHasInited)
+        mXnContext.Release();
 }
 
 void KniContext::update()
 {
+    if (!mHasInited)
+        return;
+
     XnStatus statusCode = mXnContext.WaitAnyUpdateAll();
 
     if (statusCode == XN_STATUS_OK) {
         emit updated();
     } else {
-        emit error(statusCode, xnGetStatusString(statusCode));
+        emit updateError(statusCode, xnGetStatusString(statusCode));
     }
 }
 
@@ -28,7 +33,34 @@ KniDepthGenerator& KniContext::depthGenerator()
     return kniDepthGenerator;
 }
 
-xn::Context & KniContext::xnContext()
+KniImageGenerator& KniContext::imageGenerator()
+{
+
+}
+
+bool KniContext::initContext()
+{
+    if (mHasInited)
+        return true;
+
+    XnStatus status = mXnContext.Init();
+    mHasInited = (status == XN_STATUS_OK) ? true : false;
+
+    return mHasInited;
+}
+
+xn::Context& KniContext::xnContext()
 {
     return mXnContext;
+}
+
+void KniContext::addLicense(const QString &vendor, const QString &key)
+{
+}
+
+void KniContext::run()
+{
+    while (isRunning()) {
+        update();
+    }
 }
