@@ -1,11 +1,11 @@
 #include "knidepthgenerator.h"
 
 KniDepthGenerator::KniDepthGenerator(KniContext* context)
-    : mKniContext(context),
-      mRawDepth(0)
+    : KniGenerator(context),
+      mDepthRaw(0)
 {
     XnStatus result = XN_STATUS_OK;
-    result = mKniContext->xnContext().FindExistingNode(XN_NODE_TYPE_DEPTH, mXnDepthGen);
+    result = qobject_cast<KniContext*>(parent())->xnContext().FindExistingNode(XN_NODE_TYPE_DEPTH, mXnDepthGen);
 
     if(result != XN_STATUS_OK) {
         qDebug() << "Not ok!\n";
@@ -13,18 +13,19 @@ KniDepthGenerator::KniDepthGenerator(KniContext* context)
 
     qDebug() << xnGetStatusString(result);
 
+    mXnDepthGen.GetMapOutputMode(mXnMapOutput);
+    mDepthRaw = new unsigned char[mXnMapOutput.nXRes * mXnMapOutput.nYRes * 4];
 
-    mRawDepth = new unsigned char[640 * 480 * 4];
-    mXnDepthGen.StartGenerating();
+    startGenerating();
 }
 
 KniDepthGenerator::~KniDepthGenerator()
 {
     mXnDepthGen.Release();
 
-    if (mRawDepth!=0) {
-        delete mRawDepth;
-        mRawDepth = 0;
+    if (mDepthRaw!=0) {
+        delete mDepthRaw;
+        mDepthRaw = 0;
     }
 }
 
@@ -37,10 +38,8 @@ void KniDepthGenerator::update()
    if (mXnDepthMeta.FrameID() == 0)
        return;
 
-   qDebug() << "update\n";
-
    for (XnUInt16 y = mXnDepthMeta.YOffset(); y < mXnDepthMeta.YRes() + mXnDepthMeta.YOffset(); y++) {
-       unsigned char * texture = (unsigned char*)mRawDepth + y * mXnDepthMeta.XRes() * 4 + mXnDepthMeta.XOffset() * 4;
+       unsigned char * texture = (unsigned char*)mDepthRaw + y * mXnDepthMeta.XRes() * 4 + mXnDepthMeta.XOffset() * 4;
        for (XnUInt16 x = 0; x < mXnDepthMeta.XRes(); x++, depth++, texture += 4) {
            XnUInt8 red = 0;
            XnUInt8 green = 0;
@@ -66,8 +65,69 @@ void KniDepthGenerator::update()
        }
    }
 
-   mImgDepth = QImage(mRawDepth, 640, 480, QImage::Format_RGB32);
+   mDepthImage = QImage(mDepthRaw, mXnMapOutput.nXRes, mXnMapOutput.nYRes, QImage::Format_RGB32);
    QString file("/tmp/depth_%1.jpg");
    file = file.arg(mXnDepthMeta.FrameID());
-   mImgDepth.save(file);
+   mDepthImage.save(file);
+
+   emit updated();
+}
+
+xn::DepthGenerator& KniDepthGenerator::xnDepth()
+{
+    return mXnDepthGen;
+}
+
+xn::DepthMetaData& KniDepthGenerator::xnMeta()
+{
+    return mXnDepthMeta;
+}
+
+bool KniDepthGenerator::startGenerating()
+{
+    XnStatus status = mXnDepthGen.StartGenerating();
+    mIsGenerating = (status == XN_STATUS_OK) ? true : false;
+
+    if (mIsGenerating) {
+        emit startSuccess();
+    } else {
+        emit startError(status, xnGetStatusString(status));
+    }
+}
+
+bool KniDepthGenerator::stopGenerating()
+{
+    XnStatus status = mXnDepthGen.StopGenerating();
+    mIsGenerating = (status == XN_STATUS_OK) ? false : mIsGenerating;
+
+    if (!mIsGenerating) {
+        emit stopSuccess();
+    } else {
+        emit stopError(status, xnGetStatusString(status));
+    }
+}
+
+int KniDepthGenerator::width() const
+{
+    return mXnMapOutput.nXRes;
+}
+
+int KniDepthGenerator::height() const
+{
+    return mXnMapOutput.nYRes;
+}
+
+int KniDepthGenerator::fps() const
+{
+    return mXnMapOutput.nFPS;
+}
+
+QImage& KniDepthGenerator::depth()
+{
+    return mDepthImage;
+}
+
+unsigned char* KniDepthGenerator::rawDepth() const
+{
+    return mDepthRaw;
 }

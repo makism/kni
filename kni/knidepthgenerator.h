@@ -7,30 +7,43 @@
 #include "kni_global.h"
 #include "kni_namespace.h"
 #include "knicontext.h"
+#include "knigenerator.h"
 
-class KniDepthGenerator: public QObject
+class KniDepthGenerator: public KniGenerator
 {
     Q_OBJECT
 
 public:
-    KniDepthGenerator(KniContext* context);
-    ~KniDepthGenerator();
+    explicit KniDepthGenerator(KniContext* context);
+    virtual ~KniDepthGenerator();
 
-public:
+    bool startGenerating();
+    bool stopGenerating();
+
+    int width() const;
+    int height() const;
+    int fps() const;
+
+    QImage& depth();
+    unsigned char* rawDepth() const;
+
+    xn::DepthGenerator& xnDepth();
+    xn::DepthMetaData& xnMeta();
+    XnMapOutputMode& xnMap();
+
+protected:
     void update();
 
 private:
-    // KniContext
-    KniContext* mKniContext;
-
     xn::DepthGenerator mXnDepthGen;
     xn::DepthMetaData mXnDepthMeta;
+    XnMapOutputMode mXnMapOutput;
 
     // Image;
-    QImage mImgDepth;
+    QImage mDepthImage;
 
     // Raw depth image;
-    unsigned char* mRawDepth;
+    unsigned char* mDepthRaw;
 };
 
 #endif // KNIDEPTHGENERATOR_H
