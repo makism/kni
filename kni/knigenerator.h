@@ -12,6 +12,7 @@
 class KniGenerator: public QThread
 {
     Q_OBJECT
+    Q_DISABLE_COPY(KniGenerator)
 
 public:
     KniGenerator(QObject* parent);
@@ -26,12 +27,8 @@ public:
 protected:
     virtual void update() = 0;
 
-private:
-    KniGenerator(const KniGenerator& copy);
-    KniGenerator* operator=(const KniGenerator& rhs);
-
 protected slots:
-    void slotUpdate();
+    void doUpdate();
 
 signals:
     void updated();
