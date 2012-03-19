@@ -4,8 +4,11 @@ KniDepthGenerator::KniDepthGenerator(KniContext* context)
     : KniGenerator(context),
       mDepthRaw(0)
 {
+    connect(context, SIGNAL(updated()),
+            this, SLOT(doUpdate()));
+
     XnStatus result = XN_STATUS_OK;
-    result = qobject_cast<KniContext*>(parent())->xnContext().FindExistingNode(XN_NODE_TYPE_DEPTH, mXnDepthGen);
+    result = context->xnContext().FindExistingNode(XN_NODE_TYPE_DEPTH, mXnDepthGen);
 
     if(result != XN_STATUS_OK) {
         qDebug() << "Not ok!\n";
