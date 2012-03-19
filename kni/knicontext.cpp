@@ -61,6 +61,43 @@ void KniContext::addLicense(const QString &vendor, const QString &key)
 void KniContext::run()
 {
     while (isRunning()) {
-        update();
+        if (!mWaitForGenerators)
+            update();
     }
+}
+
+void KniContext::generatorUpdated()
+{
+    mGeneratorsUpdated++;
+
+    qDebug() << "generatorUpdated() \t" << mGeneratorsUpdated << "\n";
+
+    if (mGeneratorsUpdated == children().size()) {
+        mGeneratorsUpdated = 0;
+        mWaitForGenerators = true;
+    }
+}
+
+void KniContext::startAll()
+{
+    start();
+    foreach(QObject* child, children()) {
+        KniGenerator* generator = qobject_cast<KniGenerator*>(child);
+
+        if (generator != NULL) {
+            generator->start();
+        }
+    }
+}
+
+void KniContext::stopAll()
+{
+    foreach(QObject* child, children()) {
+        KniGenerator* generator = qobject_cast<KniGenerator*>(child);
+
+        if (generator != NULL) {
+            generator->quit();
+        }
+    }
+    quit();
 }
