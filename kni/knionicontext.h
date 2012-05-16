@@ -12,7 +12,7 @@ class KniOniContext : public KniContext
     Q_OBJECT
 
 public:
-    KniOniContext(const QString& oniFile);
+    KniOniContext(const QString& oniFile, QObject* parent=0);
     ~KniOniContext();
 
     void update();

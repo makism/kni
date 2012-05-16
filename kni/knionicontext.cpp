@@ -1,7 +1,7 @@
 #include "knionicontext.h"
 
-KniOniContext::KniOniContext(const QString &oniFile)
-    : KniContext(),
+KniOniContext::KniOniContext(const QString &oniFile, QObject* parent)
+    : KniContext(parent),
       mOniFile(oniFile)
 {
     initContext();
