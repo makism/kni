@@ -22,7 +22,7 @@ class KNISHARED_EXPORT KniContext: public QThread // inherit KniGenerator?
     friend class KniGenerator;
 
 public:
-    KniContext();
+    KniContext(QObject* parent = 0);
     virtual ~KniContext();
 
     virtual void startAll();

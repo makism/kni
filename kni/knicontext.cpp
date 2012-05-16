@@ -1,8 +1,9 @@
 #include "knicontext.h"
 #include "knidepthgenerator.h"
 
-KniContext::KniContext()
-    : mHasInited(false)
+KniContext::KniContext(QObject* parent)
+    : QThread(parent),
+      mHasInited(false)
 {
 
 }
@@ -35,7 +36,8 @@ KniDepthGenerator& KniContext::depthGenerator()
 
 KniImageGenerator& KniContext::imageGenerator()
 {
-
+    static KniImageGenerator kniImageGenerator(this);
+    return kniImageGenerator;
 }
 
 bool KniContext::initContext()
