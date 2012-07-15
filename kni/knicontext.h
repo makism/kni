@@ -29,8 +29,8 @@ public:
     virtual void stopAll();
 
     virtual void update();
-    KniDepthGenerator& depthGenerator();
-    KniImageGenerator& imageGenerator();
+//    KniDepthGenerator& depthGenerator();
+//    KniImageGenerator& imageGenerator();
 
     void addLicense(const QString& vendor = "PrimeSense", const QString& key = "0KOIk2JeIBYClPWVnMoRKn5cdY4=");
 
@@ -55,11 +55,11 @@ protected slots:
     void generatorUpdated();
 
 protected:
-    bool mHasInited;
-    xn::Context mXnContext;
+    bool m_hasInited;
+    xn::Context m_xnContext;
 
-    bool mWaitForGenerators;
-    int mGeneratorsUpdated;
+    bool m_waitForGenerators;
+    int m_generatorsUpdated;
 };
 
 #endif // KNICONTEXT_H

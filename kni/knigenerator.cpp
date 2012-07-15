@@ -1,8 +1,18 @@
 #include "knigenerator.h"
 
+
+KniGenerator::KniGenerator()
+    : m_isValid(false),
+      m_isGenerating(false),
+      m_doUpdate(false)
+{
+}
+
 KniGenerator::KniGenerator(QObject* parent)
     : QThread(parent),
-      mIsGenerating(false)
+      m_isValid(true),
+      m_isGenerating(false),
+      m_doUpdate(true)
 {
     // Inform parent that we have "updated()" in our QThread.
     connect(this, SIGNAL(updated()),
@@ -21,18 +31,20 @@ KniGenerator::~KniGenerator()
 void KniGenerator::run()
 {
     while (isRunning()) {
-        if (mIsGenerating) {
-            update();
-        }
+        if (m_isGenerating)
+            if (m_doUpdate) {
+                m_doUpdate = false;
+                update();
+            }
     }
 }
 
 bool KniGenerator::isGenerating()
 {
-    return mIsGenerating;
+    return m_isGenerating;
 }
 
 void KniGenerator::doUpdate()
 {
-
+    m_doUpdate = true;
 }

@@ -1,25 +1,27 @@
 #include "knicontext.h"
+#include "kniimagegenerator.h"
 #include "knidepthgenerator.h"
 
 KniContext::KniContext(QObject* parent)
     : QThread(parent),
-      mHasInited(false)
+      m_hasInited(false),
+      m_waitForGenerators(false)
 {
 
 }
 
 KniContext::~KniContext()
 {
-    if (mHasInited)
-        mXnContext.Release();
+    if (m_hasInited)
+        m_xnContext.Release();
 }
 
 void KniContext::update()
 {
-    if (!mHasInited)
+    if (!m_hasInited)
         return;
 
-    XnStatus statusCode = mXnContext.WaitAnyUpdateAll();
+    XnStatus statusCode = m_xnContext.WaitAnyUpdateAll();
 
     if (statusCode == XN_STATUS_OK) {
         emit updated();
@@ -28,61 +30,65 @@ void KniContext::update()
     }
 }
 
-KniDepthGenerator& KniContext::depthGenerator()
-{
-    static KniDepthGenerator kniDepthGenerator(this);
-    return kniDepthGenerator;
-}
+//KniDepthGenerator& KniContext::depthGenerator()
+//{
+//    static KniDepthGenerator kniDepthGenerator(this);
+//    return kniDepthGenerator;
+//}
 
-KniImageGenerator& KniContext::imageGenerator()
-{
-    static KniImageGenerator kniImageGenerator(this);
-    return kniImageGenerator;
-}
+//KniImageGenerator& KniContext::imageGenerator()
+//{
+//    static KniImageGenerator kniImageGenerator(this);
+//    return kniImageGenerator;
+//}
 
 bool KniContext::initContext()
 {
-    if (mHasInited)
+    if (m_hasInited)
         return true;
 
-    XnStatus status = mXnContext.Init();
-    mHasInited = (status == XN_STATUS_OK) ? true : false;
+    XnStatus status = m_xnContext.Init();
+    m_hasInited = (status == XN_STATUS_OK) ? true : false;
 
-    return mHasInited;
+    return m_hasInited;
 }
 
 xn::Context& KniContext::xnContext()
 {
-    return mXnContext;
+    return m_xnContext;
 }
 
-void KniContext::addLicense(const QString &vendor, const QString &key)
+void KniContext::addLicense(const QString& vendor, const QString& key)
 {
+    Q_UNUSED(vendor);
+    Q_UNUSED(key);
 }
 
 void KniContext::run()
 {
     while (isRunning()) {
-        if (!mWaitForGenerators)
+        if (!m_waitForGenerators) {
+            m_waitForGenerators = true;
             update();
+        }
     }
 }
 
 void KniContext::generatorUpdated()
 {
-    mGeneratorsUpdated++;
+    m_generatorsUpdated++;
 
-    qDebug() << "generatorUpdated() \t" << mGeneratorsUpdated << "\n";
-
-    if (mGeneratorsUpdated == children().size()) {
-        mGeneratorsUpdated = 0;
-        mWaitForGenerators = true;
+    // A bit hacky... :/
+    if (m_generatorsUpdated == children().size()) {
+        m_generatorsUpdated = 0;
+        m_waitForGenerators = false;
     }
 }
 
 void KniContext::startAll()
 {
     start();
+
     foreach(QObject* child, children()) {
         KniGenerator* generator = qobject_cast<KniGenerator*>(child);
 
@@ -99,7 +105,9 @@ void KniContext::stopAll()
 
         if (generator != NULL) {
             generator->quit();
+            generator->deleteLater();
         }
     }
+
     quit();
 }

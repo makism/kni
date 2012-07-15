@@ -12,6 +12,9 @@
 class KniDepthGenerator: public KniGenerator
 {
     Q_OBJECT
+    Q_DISABLE_COPY(KniDepthGenerator)
+
+    friend class KniContext;
 
 public:
     explicit KniDepthGenerator(KniContext* context);
@@ -24,7 +27,7 @@ public:
     int height() const;
     int fps() const;
 
-    QImage& depth();
+    QImage depthAsImage();
     unsigned char* rawDepth() const;
 
     xn::DepthGenerator& xnDepth();
@@ -35,15 +38,15 @@ protected:
     void update();
 
 private:
-    xn::DepthGenerator mXnDepthGen;
-    xn::DepthMetaData mXnDepthMeta;
-    XnMapOutputMode mXnMapOutput;
+    xn::DepthGenerator m_xnDepthGen;
+    xn::DepthMetaData m_xnDepthMeta;
+    XnMapOutputMode m_xnMapOutput;
 
     // Image;
-    QImage mDepthImage;
+    QImage m_depthImage;
 
     // Raw depth image;
-    unsigned char* mDepthRaw;
+    unsigned char* m_depthRaw;
 };
 
 #endif // KNIDEPTHGENERATOR_H

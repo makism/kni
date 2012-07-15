@@ -17,7 +17,8 @@ SOURCES += \
     knicontext.cpp \
     knionicontext.cpp \
     knidepthgenerator.cpp \
-    knigenerator.cpp
+    knigenerator.cpp \
+    kniimagegenerator.cpp
 
 HEADERS +=\
     kni_global.h \
@@ -26,7 +27,8 @@ HEADERS +=\
     knidepthgenerator.h \
     kni_namespace.h \
     kni.h \
-    knigenerator.h
+    knigenerator.h \
+    kniimagegenerator.h
 
 unix {
     target.path = /usr/lib

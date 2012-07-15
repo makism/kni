@@ -1,13 +1,15 @@
-#include <QtCore/QCoreApplication>
+#include <QCoreApplication>
 
-#include "kni.h"
+#include "knionicontext.h"
+#include "knidepthgenerator.h"
+#include "kniimagegenerator.h"
 
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    KniOniContext context("/home/makism/Temp/ONIs/me.oni");
-    KniDepthGenerator& depth = context.depthGenerator();
+    KniOniContext context("/opt/temp/ONIs/me.oni");
+    KniDepthGenerator* depth = new KniDepthGenerator(&context);
 
     context.startAll();
 

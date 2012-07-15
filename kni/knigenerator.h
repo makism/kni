@@ -4,6 +4,8 @@
 #include <QtCore>
 #include <QThread>
 
+#include "knicontext.h"
+
 #include <XnOpenNI.h>
 #include <XnCodecIDs.h>
 #include <XnCppWrapper.h>
@@ -14,7 +16,10 @@ class KniGenerator: public QThread
     Q_OBJECT
     Q_DISABLE_COPY(KniGenerator)
 
+    friend class KniContext;
+
 public:
+    KniGenerator();
     KniGenerator(QObject* parent);
     virtual ~KniGenerator();
 
@@ -33,12 +38,14 @@ protected slots:
 signals:
     void updated();
     void startSuccess();
-    void startError(int errorId, const QString& errorStr);
+    void startError(int code, const QString& message);
     void stopSuccess();
-    void stopError(int errorId, const QString& errorStr);
+    void stopError(int code, const QString& message);
 
 protected:
-    bool mIsGenerating;
+    bool m_doUpdate;
+    bool m_isValid;
+    bool m_isGenerating;
 };
 
 #endif // KNIGENERATOR_H

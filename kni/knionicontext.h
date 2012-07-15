@@ -12,7 +12,7 @@ class KniOniContext : public KniContext
     Q_OBJECT
 
 public:
-    KniOniContext(const QString& oniFile, QObject* parent=0);
+    KniOniContext(const QString& oniFile, QObject* parent = 0);
     ~KniOniContext();
 
     void update();
@@ -20,9 +20,9 @@ public:
     xn::Player& xnPlayer();
 
 private:
-    const QString mOniFile; // convert to QFile?
+    const QString m_recording; // convert to QFile?
 
-    xn::Player mXnPlayer;
+    xn::Player m_xnPlayer;
 };
 
 #endif // KNIONICONTEXT_H

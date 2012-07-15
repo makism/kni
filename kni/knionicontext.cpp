@@ -2,19 +2,19 @@
 
 KniOniContext::KniOniContext(const QString &oniFile, QObject* parent)
     : KniContext(parent),
-      mOniFile(oniFile)
+      m_recording(oniFile)
 {
     initContext();
 
     xn::EnumerationErrors errors;
     XnStatus statusCode = XN_STATUS_OK;
 
-    statusCode = mXnContext.OpenFileRecording(mOniFile.toLatin1().data(), mXnPlayer);
+    statusCode = m_xnContext.OpenFileRecording(m_recording.toLatin1().data(), m_xnPlayer);
 }
 
 KniOniContext::~KniOniContext()
 {
-    mXnPlayer.Release();
+    m_xnPlayer.Release();
 }
 
 void KniOniContext::update()
@@ -24,5 +24,5 @@ void KniOniContext::update()
 
 xn::Player& KniOniContext::xnPlayer()
 {
-    return mXnPlayer;
+    return m_xnPlayer;
 }
