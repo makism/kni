@@ -1,5 +1,11 @@
 #include "knidepthgenerator.h"
 
+KniDepthGenerator::KniDepthGenerator()
+    : KniGenerator(),
+      m_depthRaw(0)
+{
+}
+
 KniDepthGenerator::KniDepthGenerator(KniContext* context)
     : KniGenerator(context),
       m_depthRaw(0)

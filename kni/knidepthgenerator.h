@@ -17,6 +17,7 @@ class KniDepthGenerator: public KniGenerator
     friend class KniContext;
 
 public:
+    KniDepthGenerator();
     explicit KniDepthGenerator(KniContext* context);
     virtual ~KniDepthGenerator();
 
